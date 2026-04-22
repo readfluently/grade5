@@ -1,0 +1,261 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Afrikaans Spelling</title>
+
+<style>
+body {
+    font-family: Arial;
+    text-align: center;
+    background: #f5f7fb;
+}
+
+.card { display:none; padding:20px; }
+.active { display:block; }
+
+table { width:100%; }
+td {
+    padding:15px;
+    cursor:pointer;
+    font-size:18px;
+}
+
+.afrikaans { background:#ffedd5; color:#c2410c; }
+.english { background:#dbeafe; color:#1d4ed8; }
+
+button {
+    padding:10px;
+    margin:10px;
+    cursor:pointer;
+}
+
+.dropzone {
+    border:2px dashed #aaa;
+    padding:10px;
+    min-height:50px;
+    margin:10px;
+}
+
+.draggable {
+    display:inline-block;
+    padding:10px;
+    margin:5px;
+    background:#ddd;
+    cursor:grab;
+}
+</style>
+
+</head>
+<body>
+
+<h1 onclick="speak('Afrikaans spelling lesson')">Afrikaans Spelling</h1>
+
+<!-- PAGE 1 -->
+<div class="card active" id="page1">
+<h2 onclick="speak('Learn the words')">Learn (Click to hear)</h2>
+
+<table>
+<tr>
+<td class="afrikaans" onclick="playAudio('avontuur')">avontuur</td>
+<td class="english" onclick="speak('adventure')">adventure</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('belangrik')">belangrik</td>
+<td class="english" onclick="speak('important')">important</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('gevaarlik')">gevaarlik</td>
+<td class="english" onclick="speak('dangerous')">dangerous</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('vriendelik')">vriendelik</td>
+<td class="english" onclick="speak('friendly')">friendly</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('gelukkig')">gelukkig</td>
+<td class="english" onclick="speak('happy')">happy</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('ongelukkig')">ongelukkig</td>
+<td class="english" onclick="speak('unhappy')">unhappy</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('moontlik')">moontlik</td>
+<td class="english" onclick="speak('possible')">possible</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('onmoontlik')">onmoontlik</td>
+<td class="english" onclick="speak('impossible')">impossible</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('versigtig')">versigtig</td>
+<td class="english" onclick="speak('careful')">careful</td>
+</tr>
+
+<tr>
+<td class="afrikaans" onclick="playAudio('vinnig')">vinnig</td>
+<td class="english" onclick="speak('fast')">fast</td>
+</tr>
+</table>
+</div>
+
+<!-- PAGE 2 -->
+<div class="card" id="page2">
+<h2 onclick="speak('Fill in the missing syllable')">Fill Missing</h2>
+
+<h3>ge___lik</h3>
+<input id="ans">
+<button onclick="check()">Check</button>
+
+<p id="feedback"></p>
+</div>
+
+<!-- PAGE 3 -->
+<div class="card" id="page3">
+<h2 onclick="speak('Memory challenge')">Memory</h2>
+
+<p id="words">avontuur - belangrik - gevaarlik</p>
+<button onclick="hide()">Hide</button>
+
+<div id="inputs" style="display:none;">
+<input id="w1">
+<input id="w2">
+<input id="w3">
+<button onclick="checkMemory()">Check</button>
+</div>
+
+<p id="memFeedback"></p>
+</div>
+
+<!-- PAGE 4 -->
+<div class="card" id="page4">
+<h2 onclick="speak('Drag and drop syllables')">Build the Word</h2>
+
+<p id="targetWord">gevaarlik</p>
+
+<div id="syllables"></div>
+
+<div class="dropzone" id="dropzone"></div>
+
+<button onclick="checkDrag()">Check</button>
+
+<p id="dragFeedback"></p>
+</div>
+
+<!-- NAV -->
+<div>
+<button onclick="show(1)">Learn</button>
+<button onclick="show(2)">Spell</button>
+<button onclick="show(3)">Memory</button>
+<button onclick="show(4)">Drag</button>
+</div>
+
+<script>
+
+// AUDIO FILES
+const audio = {
+    avontuur: new Audio("avontuur.mp3"),
+    belangrik: new Audio("belangrik.mp3"),
+    gevaarlik: new Audio("gevaarlik.mp3"),
+    vriendelik: new Audio("vriendelik.mp3"),
+    gelukkig: new Audio("gelukkig.mp3"),
+    ongelukkig: new Audio("ongelukkig.mp3"),
+    moontlik: new Audio("moontlik.mp3"),
+    onmoontlik: new Audio("onmoontlik.mp3"),
+    versigtig: new Audio("versigtig.mp3"),
+    vinnig: new Audio("vinnig.mp3")
+};
+
+function playAudio(w){ audio[w].play(); }
+
+// TTS ENGLISH
+function speak(text){
+    let msg = new SpeechSynthesisUtterance(text);
+    speechSynthesis.speak(msg);
+}
+
+// NAV
+function show(n){
+    document.querySelectorAll('.card').forEach(c=>c.classList.remove('active'));
+    document.getElementById('page'+n).classList.add('active');
+}
+
+// PAGE 2
+function check(){
+    let a = document.getElementById('ans').value.toLowerCase();
+    if(a==="vaar"){
+        document.getElementById('feedback').innerHTML="✅ Correct";
+        playAudio("gevaarlik");
+    } else {
+        document.getElementById('feedback').innerHTML="❌ Try again";
+    }
+}
+
+// PAGE 3
+function hide(){
+    document.getElementById('words').style.display="none";
+    document.getElementById('inputs').style.display="block";
+}
+
+function checkMemory(){
+    let correct=["avontuur","belangrik","gevaarlik"];
+    let user=[
+        w1.value.toLowerCase(),
+        w2.value.toLowerCase(),
+        w3.value.toLowerCase()
+    ];
+    document.getElementById('memFeedback').innerHTML =
+        JSON.stringify(user)==JSON.stringify(correct) ? "✅ Great!" : "❌ Try again";
+}
+
+// PAGE 4 DRAG
+const word = ["ge","vaar","lik"];
+
+function initDrag(){
+    let container = document.getElementById('syllables');
+    container.innerHTML="";
+    word.sort(()=>Math.random()-0.5).forEach(s=>{
+        let d=document.createElement("div");
+        d.className="draggable";
+        d.draggable=true;
+        d.innerText=s;
+        d.ondragstart=e=>e.dataTransfer.setData("text",s);
+        container.appendChild(d);
+    });
+}
+
+const dropzone=document.getElementById('dropzone');
+
+dropzone.ondragover=e=>e.preventDefault();
+dropzone.ondrop=e=>{
+    let data=e.dataTransfer.getData("text");
+    let span=document.createElement("span");
+    span.innerText=data+" ";
+    dropzone.appendChild(span);
+};
+
+function checkDrag(){
+    let result=dropzone.innerText.replace(/\s/g,'');
+    if(result==="gevaarlik"){
+        document.getElementById('dragFeedback').innerHTML="🎉 Correct!";
+        playAudio("gevaarlik");
+    } else {
+        document.getElementById('dragFeedback').innerHTML="❌ Try again";
+    }
+}
+
+initDrag();
+
+</script>
+
+</body>
+</html>
